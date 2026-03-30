@@ -16,6 +16,18 @@ on:
           - "windows-latest"
           - "macos-latest"
           - "ubuntu-24.04"
+      disabled-web-shortcuts:
+        description: "disable web-shortcuts"
+        type: boolean
+        default: true
+      force-internal-navigation:
+        description: "force-internal-navigation"
+        type: boolean
+        default: true
+      new-window:
+        description: "new-window"
+        type: boolean
+        default: true
       url:
         description: "Website URL"
         required: true
@@ -165,6 +177,15 @@ jobs:
           if ("${{inputs.multi-window}}" -eq "true"){
             $args += "--multi-window"
           }
+          if ("${{inputs.new-window}}" -eq "true"){
+            $args += "--new-window"
+          }          
+          if ("${{inputs.disabled-web-shortcuts}}" -eq "true"){
+            $args += "--disabled-web-shortcuts"
+          }          
+          if ("${{inputs.force-internal-navigation}}" -eq "true"){
+            $args += "--force-internal-navigation"
+          } 
 
           Write-Host "Running: node dist/cli.js $($args -join ' ')"
           node dist/cli.js $args
