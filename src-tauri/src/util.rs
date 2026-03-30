@@ -24,19 +24,27 @@ pub fn get_pake_config() -> (PakeConfig, Config) {
 }
 
 pub fn get_data_dir(app: &AppHandle, package_name: String) -> PathBuf {
-    {
-        let data_dir = app
-            .path()
-            .config_dir()
-            .expect("Failed to get data dirname")
-            .join(package_name);
+    #[cfg(target_os = "windows")]
+    let base_dir = std::env::current_exe()
+        .expect("Failed to get current exe path")
+        .parent()
+        .expect("Failed to get install directory")
+        .to_path_buf();
 
-        if !data_dir.exists() {
-            std::fs::create_dir(&data_dir)
-                .unwrap_or_else(|_| panic!("Can't create dir {}", data_dir.display()));
-        }
-        data_dir
+    #[cfg(not(target_os = "windows"))]
+    let base_dir = app
+        .path()
+        .config_dir()
+        .expect("Failed to get data dirname");
+
+    let data_dir = base_dir.join(format!("{package_name}-data"));
+
+    if !data_dir.exists() {
+        std::fs::create_dir_all(&data_dir)
+            .unwrap_or_else(|_| panic!("Can't create dir {}", data_dir.display()));
     }
+
+    data_dir
 }
 
 pub fn show_toast(window: &WebviewWindow, message: &str) {
