@@ -32,10 +32,7 @@ pub fn get_data_dir(app: &AppHandle, package_name: String) -> PathBuf {
         .to_path_buf();
 
     #[cfg(not(target_os = "windows"))]
-    let base_dir = app
-        .path()
-        .config_dir()
-        .expect("Failed to get data dirname");
+    let base_dir = app.path().config_dir().expect("Failed to get data dirname");
 
     let data_dir = base_dir.join(format!("{package_name}-data"));
 
