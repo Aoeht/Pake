@@ -32,10 +32,14 @@ on:
         description: "Website URL"
         required: true
       multi-window:
-        description: :"Multi windows"
+        description: "Multi windows"
         required: true
         type: boolean
         default:  true
+      adblock:
+        description: "whether to block ads using js"
+        type: boolean
+        default: true 
       name:
         description: "App name (lowercase for Linux)"
         required: true
@@ -185,6 +189,9 @@ jobs:
           }          
           if ("${{inputs.force-internal-navigation}}" -eq "true"){
             $args += "--force-internal-navigation"
+          } 
+          if ("${{inputs.adblock}}" -eq "true"){
+            $args += "-inject ./src-tauri/src/inject/custom.js"
           } 
 
           Write-Host "Running: node dist/cli.js $($args -join ' ')"
