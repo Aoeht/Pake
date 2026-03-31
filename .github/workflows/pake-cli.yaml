@@ -191,7 +191,7 @@ jobs:
             $args += "--force-internal-navigation"
           } 
           if ("${{inputs.adblock}}" -eq "true"){
-            $args += "-inject ./src-tauri/src/inject/custom.js"
+            $args += "--inject ./src-tauri/src/inject/custom.js"
           } 
 
           Write-Host "Running: node dist/cli.js $($args -join ' ')"
