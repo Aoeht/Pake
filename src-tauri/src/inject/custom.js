@@ -2,6 +2,10 @@
   console.log("[Pake Adblock] injected");
   console.log("[Pake Adblock] url:", location.href);
   let enabled = true;
+  let adObserver = null;
+  // Delay (ms) after window load before attaching the MutationObserver,
+  // to let Bilibili's virtualized/lazy-loaded content stabilize first.
+  const OBSERVER_DELAY_MS = 2000;
 
   const SELECTOR = ".vui_icon.bili-video-card__stats"; //主页小火箭视频
   const PROMOTION = ".desc"; //视频右方带小火箭广告
@@ -74,17 +78,28 @@
 
   function start() {
     console.log("[Pake Adblock] start");
-    removeAds();
 
-    const observer = new MutationObserver(() => {
-      console.log("[Pake Adblock] mutation observed");
+    const boot = () => {
       removeAds();
-    });
 
-    observer.observe(document.documentElement, {
-      childList: true,
-      subtree: true,
-    });
+      setTimeout(() => {
+        adObserver = new MutationObserver(() => {
+          console.log("[Pake Adblock] mutation observed");
+          removeAds();
+        });
+
+        adObserver.observe(document.documentElement, {
+          childList: true,
+          subtree: true,
+        });
+      }, OBSERVER_DELAY_MS);
+    };
+
+    if (document.readyState === "complete") {
+      boot();
+    } else {
+      window.addEventListener("load", boot, { once: true });
+    }
   }
 
   window.addEventListener("pake:toggle-adblock", () => {
@@ -94,12 +109,11 @@
     );
     if (enabled) {
       removeAds();
+    } else if (adObserver) {
+      adObserver.disconnect();
+      adObserver = null;
     }
   });
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", start, { once: true });
-  } else {
-    start();
-  }
+  start();
 })();
