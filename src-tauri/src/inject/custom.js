@@ -44,7 +44,7 @@
       }
 
       if (node) {
-        node..style.display="none";
+        node.style.display="none";
       }
     });
      document.querySelectorAll(AD4).forEach((el) => {
@@ -54,7 +54,7 @@
       }
 
       if (node) {
-        node..style.display="none";
+        node.style.display="none";
       }
     });
     document.querySelectorAll(SELECTOR).forEach((el) => {
@@ -64,7 +64,7 @@
       }
 
       if (node) {
-        node..style.display="none";
+        node.style.display="none";
       }
     });
   }
@@ -85,7 +85,7 @@
           childList: true,
           subtree: true,
         });
-      }, OBSERVER_DELAY_MS);
+      }, 3000);
     };
 
     if (document.readyState === "complete") {
