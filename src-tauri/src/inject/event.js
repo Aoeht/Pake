@@ -53,7 +53,11 @@ function triggerPasteAsPlainText() {
 }
 
 function handleShortcut(event) {
-  if (event.shiftKey && event.key.toLowerCase() === "a") {
+  if (
+    (event.ctrlKey || event.metaKey) &&
+    event.shiftKey &&
+    event.key.toLowerCase() === "a"
+  ) {
     event.preventDefault();
     window.dispatchEvent(new CustomEvent("pake:toggle-adblock"));
     return;

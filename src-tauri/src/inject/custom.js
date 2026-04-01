@@ -85,17 +85,17 @@
       childList: true,
       subtree: true,
     });
-
-    window.addEventListener("pake:toggle-adblock", () => {
-      enabled = !enabled;
-      console.log(
-        `[Pake Adblock] ${enabled ? "enabled" : "disabled"} by shortcut`,
-      );
-      if (enabled) {
-        removeAds();
-      }
-    });
   }
+
+  window.addEventListener("pake:toggle-adblock", () => {
+    enabled = !enabled;
+    console.log(
+      `[Pake Adblock] ${enabled ? "enabled" : "disabled"} by shortcut`,
+    );
+    if (enabled) {
+      removeAds();
+    }
+  });
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", start, { once: true });
