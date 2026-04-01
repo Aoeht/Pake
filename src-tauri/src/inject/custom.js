@@ -1,6 +1,7 @@
 (function () {
   console.log("[Pake Adblock] injected");
   console.log("[Pake Adblock] url:", location.href);
+  let enabled = true;
 
   const SELECTOR = ".vui_icon.bili-video-card__stats"; //主页小火箭视频
   const PROMOTION = ".desc"; //视频右方带小火箭广告
@@ -9,6 +10,8 @@
   const AD3 = ".vcd"; //视频右边带感兴趣字样的广告
   const AD4 = ".enter-button"; //下载游戏的广告
   function removeAds() {
+    if (!enabled) return;
+
     document.querySelectorAll('[title*="感兴趣"]').forEach((el_startpage) => {
       let node_startpage = el_startpage;
       for (let i = 0; i < 5 && node_startpage; i++) {
@@ -81,6 +84,16 @@
     observer.observe(document.documentElement, {
       childList: true,
       subtree: true,
+    });
+
+    window.addEventListener("pake:toggle-adblock", () => {
+      enabled = !enabled;
+      console.log(
+        `[Pake Adblock] ${enabled ? "enabled" : "disabled"} by shortcut`,
+      );
+      if (enabled) {
+        removeAds();
+      }
     });
   }
 
