@@ -206,13 +206,24 @@ jobs:
           node dist/cli.js $args
 
           git checkout -- src-tauri/Cargo.lock
-
+      - name: List output files
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Get-ChildItem -Recurse | Select-Object FullName
+      - name: List output files
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          find . -maxdepth 6 -type f | sort
       - name: Upload DMG (macOS)
         if: runner.os == 'macOS'
         uses: actions/upload-artifact@v6
         with:
           name: ${{ inputs.name }}-macOS
-          path: ${{ inputs.name }}.dmg
+          path: |
+            **/*.dmg
+            src-tauri/target/release/bundle/**/*.dmg
           retention-days: 3
 
       - name: Upload DEB (Linux)
@@ -220,7 +231,11 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: ${{ inputs.name }}-Linux-deb
-          path: ${{ inputs.name }}.deb
+          path: |
+            **/*.deb
+            **/*.AppImage
+            src-tauri/target/release/bundle/**/*.deb
+            src-tauri/target/release/bundle/**/*.AppImage
           retention-days: 3
           if-no-files-found: ignore
 
@@ -229,7 +244,11 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: ${{ inputs.name }}-Linux-AppImage
-          path: ${{ inputs.name }}.AppImage
+          path: |
+            **/*.deb
+            **/*.AppImage
+            src-tauri/target/release/bundle/**/*.deb
+            src-tauri/target/release/bundle/**/*.AppImage
           retention-days: 3
           if-no-files-found: ignore
 
@@ -238,7 +257,9 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: ${{ inputs.name }}-Windows
-          path: ${{ inputs.name }}.msi
+          path: |
+            **/*.msi
+            src-tauri/target/release/bundle/**/*.msi
           retention-days: 3
 
       - name: Rust cache store
