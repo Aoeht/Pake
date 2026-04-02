@@ -85,7 +85,7 @@
           childList: true,
           subtree: true,
         });
-      }, 3000);
+      }, 800);
     };
 
     if (document.readyState === "complete") {
