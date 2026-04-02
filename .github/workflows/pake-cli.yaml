@@ -21,7 +21,7 @@ on:
         type: boolean
         default: false
       debug:
-        description: : "develop mode"
+        description: "develop mode"
         type: boolean
         default: false
       force-internal-navigation:
