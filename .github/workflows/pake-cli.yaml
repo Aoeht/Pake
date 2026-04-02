@@ -194,7 +194,7 @@ jobs:
           if ("${{inputs.force-internal-navigation}}" -eq "true"){
             $args += "--force-internal-navigation"
           } 
-          if ("${{inputs.debug}" -eq "true"){
+          if ("${{inputs.debug}}" -eq "true"){
             $args += "--debug"
           } 
           if ("${{inputs.adblock}}" -eq "true"){
