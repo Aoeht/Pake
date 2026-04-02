@@ -19,7 +19,11 @@ on:
       disabled-web-shortcuts:
         description: "disable web-shortcuts"
         type: boolean
-        default: true
+        default: false
+      debug:
+        description: : "develop mode"
+        type: boolean
+        default: false
       force-internal-navigation:
         description: "force-internal-navigation"
         type: boolean
@@ -189,6 +193,9 @@ jobs:
           }          
           if ("${{inputs.force-internal-navigation}}" -eq "true"){
             $args += "--force-internal-navigation"
+          } 
+          if ("${{inputs.debug}" -eq "true"){
+            $args += "--debug"
           } 
           if ("${{inputs.adblock}}" -eq "true"){
             $args += "--inject"
