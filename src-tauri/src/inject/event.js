@@ -1007,54 +1007,50 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      event.preventDefault();
-      event.stopPropagation();
+       // 先判断是否是媒体或链接
+    const mediaInfo = getMediaInfo(target);
+    const linkElement =
+      target && typeof target.closest === "function"
+        ? target.closest("a")
+        : null;
+    const isLink = linkElement && linkElement.href && !mediaInfo.isMedia;
 
-      // Check for media elements (images/videos)
-      const mediaInfo = getMediaInfo(target);
-
-      // Check for links (but not if it's media)
-      const linkElement =
-        target && typeof target.closest === "function"
-          ? target.closest("a")
-          : null;
-      const isLink = linkElement && linkElement.href && !mediaInfo.isMedia;
-
-      let menuItems = [];
-
-      if (mediaInfo.isMedia) {
-        menuItems = buildMenuItems("media", mediaInfo);
-      } else if (isLink) {
-        const linkUrl = linkElement.href;
-        menuItems = buildMenuItems("link", {
-          url: linkUrl,
-          isFile: isDownloadableFile(linkUrl),
-        });
-      }
-
-      // Always append "关闭广告 / 恢复注入" toggle, separated when other items precede it
-      const isInjectionDisabled =
-        localStorage.getItem("pake_disable_js_injection") === "true";
-      const adToggleText = isInjectionDisabled
-        ? menuTexts.enableAds
-        : menuTexts.disableAds;
-      if (menuItems.length > 0) {
-        menuItems.push(createMenuSeparator());
-      }
-      menuItems.push(createMenuItem(adToggleText, toggleJsInjection));
-
-      showContextMenu(event.clientX, event.clientY, menuItems);
-    },
-    true,
-  );
-
-  // Hide context menu when clicking elsewhere
-  document.addEventListener("click", hideContextMenu);
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      hideContextMenu();
+    // 空白处直接放行，恢复原来的默认菜单
+    if (!mediaInfo.isMedia && !isLink) {
+      return;
     }
-  });
+
+    // 只有图片/视频/链接才拦截，显示自定义菜单
+    event.preventDefault();
+    event.stopPropagation();
+
+    let menuItems = [];
+
+    if (mediaInfo.isMedia) {
+      menuItems = buildMenuItems("media", mediaInfo);
+    } else if (isLink) {
+      const linkUrl = linkElement.href;
+      menuItems = buildMenuItems("link", {
+        url: linkUrl,
+        isFile: isDownloadableFile(linkUrl),
+      });
+    }
+
+    // 末尾追加广告切换项
+    const isInjectionDisabled =
+      localStorage.getItem("pake_disable_js_injection") === "true";
+    const adToggleText = isInjectionDisabled
+      ? menuTexts.enableAds
+      : menuTexts.disableAds;
+
+    if (menuItems.length > 0) {
+      menuItems.push(createMenuSeparator());
+    }
+    menuItems.push(createMenuItem(adToggleText, toggleJsInjection));
+
+    showContextMenu(event.clientX, event.clientY, menuItems);
+  },
+  true,
 });
 
 document.addEventListener("DOMContentLoaded", function () {
