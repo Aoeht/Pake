@@ -1,3 +1,4 @@
+if (localStorage.getItem("pake_disable_js_injection") !== "true") {
 (function () {
   console.log("[Pake Adblock] injected");
   console.log("[Pake Adblock] url:", location.href);
@@ -185,3 +186,4 @@
 
   start();
 })();
+}
