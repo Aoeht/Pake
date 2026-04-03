@@ -986,10 +986,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function toggleJsInjection() {
     const isDisabled =
       localStorage.getItem("pake_disable_js_injection") === "true";
-    localStorage.setItem(
-      "pake_disable_js_injection",
-      (!isDisabled).toString(),
-    );
+    localStorage.setItem("pake_disable_js_injection", (!isDisabled).toString());
     window.location.reload();
   }
 
