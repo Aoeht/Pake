@@ -684,6 +684,9 @@ document.addEventListener("DOMContentLoaded", () => {
     downloadFile: isChinese ? "下载文件" : "Download File",
     copyAddress: isChinese ? "复制地址" : "Copy Address",
     openInBrowser: isChinese ? "浏览器打开" : "Open in Browser",
+    // Ad / injection toggle
+    disableAds: isChinese ? "关闭广告" : "Disable Injection",
+    enableAds: isChinese ? "恢复注入" : "Enable Injection",
   };
 
   // Menu theme configuration
@@ -968,10 +971,24 @@ document.addEventListener("DOMContentLoaded", () => {
     return items;
   }
 
+  // Toggle JS injection flag and reload the page
+  function toggleJsInjection() {
+    const isDisabled =
+      localStorage.getItem("pake_disable_js_injection") === "true";
+    localStorage.setItem(
+      "pake_disable_js_injection",
+      (!isDisabled).toString(),
+    );
+    window.location.reload();
+  }
+
   // Handle right-click context menu
   document.addEventListener(
     "contextmenu",
     function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+
       const target = event.target;
 
       // Check for media elements (images/videos)
@@ -984,26 +1001,31 @@ document.addEventListener("DOMContentLoaded", () => {
           : null;
       const isLink = linkElement && linkElement.href && !mediaInfo.isMedia;
 
-      // Only show custom menu for media or links
-      if (mediaInfo.isMedia || isLink) {
-        event.preventDefault();
-        event.stopPropagation();
+      let menuItems = [];
 
-        let menuItems = [];
-
-        if (mediaInfo.isMedia) {
-          menuItems = buildMenuItems("media", mediaInfo);
-        } else if (isLink) {
-          const linkUrl = linkElement.href;
-          menuItems = buildMenuItems("link", {
-            url: linkUrl,
-            isFile: isDownloadableFile(linkUrl),
-          });
-        }
-
-        showContextMenu(event.clientX, event.clientY, menuItems);
+      if (mediaInfo.isMedia) {
+        menuItems = buildMenuItems("media", mediaInfo);
+      } else if (isLink) {
+        const linkUrl = linkElement.href;
+        menuItems = buildMenuItems("link", {
+          url: linkUrl,
+          isFile: isDownloadableFile(linkUrl),
+        });
       }
-      // For all other elements, let browser's default context menu handle it
+
+      // Always append "关闭广告 / 恢复注入" toggle
+      const isInjectionDisabled =
+        localStorage.getItem("pake_disable_js_injection") === "true";
+      const adToggleText = isInjectionDisabled
+        ? menuTexts.enableAds
+        : menuTexts.disableAds;
+      if (menuItems.length > 0) {
+        // Add a bottom border to the last preceding item to visually separate groups
+        menuItems[menuItems.length - 1].style.borderBottom = `1px solid ${getMenuStyles().item.divider}`;
+      }
+      menuItems.push(createMenuItem(adToggleText, toggleJsInjection));
+
+      showContextMenu(event.clientX, event.clientY, menuItems);
     },
     true,
   );
