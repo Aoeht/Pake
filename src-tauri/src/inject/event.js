@@ -806,6 +806,17 @@ document.addEventListener("DOMContentLoaded", () => {
     return item;
   }
 
+  function createMenuSeparator() {
+    const styles = getMenuStyles();
+    const sep = document.createElement("div");
+    sep.style.cssText = `
+      height: 1px;
+      background: ${styles.item.divider};
+      margin: 4px 8px;
+    `;
+    return sep;
+  }
+
   function showContextMenu(x, y, items) {
     let contextMenu = document.getElementById(MENU_CONFIG.id);
 
@@ -986,10 +997,21 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener(
     "contextmenu",
     function (event) {
+      const target = event.target;
+
+      // Allow native context menu for editable elements (inputs, textareas, contenteditable)
+      const tagName = target && target.tagName && target.tagName.toLowerCase();
+      const isEditable =
+        tagName === "input" ||
+        tagName === "textarea" ||
+        (target && target.isContentEditable);
+
+      if (isEditable) {
+        return;
+      }
+
       event.preventDefault();
       event.stopPropagation();
-
-      const target = event.target;
 
       // Check for media elements (images/videos)
       const mediaInfo = getMediaInfo(target);
@@ -1013,15 +1035,14 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
 
-      // Always append "关闭广告 / 恢复注入" toggle
+      // Always append "关闭广告 / 恢复注入" toggle, separated when other items precede it
       const isInjectionDisabled =
         localStorage.getItem("pake_disable_js_injection") === "true";
       const adToggleText = isInjectionDisabled
         ? menuTexts.enableAds
         : menuTexts.disableAds;
       if (menuItems.length > 0) {
-        // Add a bottom border to the last preceding item to visually separate groups
-        menuItems[menuItems.length - 1].style.borderBottom = `1px solid ${getMenuStyles().item.divider}`;
+        menuItems.push(createMenuSeparator());
       }
       menuItems.push(createMenuItem(adToggleText, toggleJsInjection));
 
