@@ -991,23 +991,23 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Handle right-click context menu
-  document.addEventListener(
-    "contextmenu",
-    function (event) {
-      const target = event.target;
+document.addEventListener(
+  "contextmenu",
+  function (event) {
+    const target = event.target;
 
-      // Allow native context menu for editable elements (inputs, textareas, contenteditable)
-      const tagName = target && target.tagName && target.tagName.toLowerCase();
-      const isEditable =
-        tagName === "input" ||
-        tagName === "textarea" ||
-        (target && target.isContentEditable);
+    const tagName = target && target.tagName && target.tagName.toLowerCase();
+    const isEditable =
+      tagName === "input" ||
+      tagName === "textarea" ||
+      (target && target.isContentEditable);
 
-      if (isEditable) {
-        return;
-      }
+    // 输入框保留原生菜单
+    if (isEditable) {
+      return;
+    }
 
-       // 先判断是否是媒体或链接
+    // 先判断是否是媒体或链接
     const mediaInfo = getMediaInfo(target);
     const linkElement =
       target && typeof target.closest === "function"
@@ -1051,7 +1051,8 @@ document.addEventListener("DOMContentLoaded", () => {
     showContextMenu(event.clientX, event.clientY, menuItems);
   },
   true,
-});
+);
+
 
 document.addEventListener("DOMContentLoaded", function () {
   let permVal = "granted";
