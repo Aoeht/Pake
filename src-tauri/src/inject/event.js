@@ -1051,7 +1051,7 @@ document.addEventListener(
     showContextMenu(event.clientX, event.clientY, menuItems);
   },
   true,
-);
+  });
 
 
 document.addEventListener("DOMContentLoaded", function () {
