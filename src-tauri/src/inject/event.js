@@ -508,6 +508,9 @@ document.addEventListener("DOMContentLoaded", () => {
     return isSameDomain(url);
   };
 
+  // Save original window.open before any overrides or usage in detectAnchorElementClick
+  const originalWindowOpen = window.open;
+
   const detectAnchorElementClick = (e) => {
     // Safety check: ensure e.target exists and is an Element with closest method
     if (!e.target || typeof e.target.closest !== "function") {
@@ -522,7 +525,7 @@ document.addEventListener("DOMContentLoaded", () => {
       let filename = anchorElement.download || getFilenameFromUrl(absoluteUrl);
 
       // Keep OAuth/authentication flows inside the app when popup support is enabled.
-      if (window.isAuthLink(absoluteUrl)) {
+      if (typeof window.isAuthLink === "function" && window.isAuthLink(absoluteUrl)) {
         console.log("[Pake] Handling OAuth navigation in-app:", absoluteUrl);
 
         if (window.pakeConfig?.new_window) {
@@ -631,10 +634,9 @@ document.addEventListener("DOMContentLoaded", () => {
   detectDownloadByCreateAnchor();
 
   // Rewrite the window.open function.
-  const originalWindowOpen = window.open;
   window.open = function (url, name, specs) {
     // Allow authentication popups to open normally
-    if (window.isAuthPopup(url, name)) {
+    if (typeof window.isAuthPopup === "function" && window.isAuthPopup(url, name)) {
       return originalWindowOpen.call(window, url, name, specs);
     }
 
@@ -893,6 +895,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Check if element is media (image or video)
   function getMediaInfo(target) {
+    if (!target || !target.tagName) {
+      return { isMedia: false, url: "", type: "" };
+    }
+
     // Check for img tags
     if (target.tagName.toLowerCase() === "img") {
       return { isMedia: true, url: target.src, type: "image" };
@@ -1051,10 +1057,8 @@ document.addEventListener(
     showContextMenu(event.clientX, event.clientY, menuItems);
   },
   true,
-  });
+  );
 
-
-document.addEventListener("DOMContentLoaded", function () {
   let permVal = "granted";
   window.Notification = function (title, options) {
     const { invoke } = window.__TAURI__.core;
