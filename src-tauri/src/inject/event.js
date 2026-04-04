@@ -525,7 +525,10 @@ document.addEventListener("DOMContentLoaded", () => {
       let filename = anchorElement.download || getFilenameFromUrl(absoluteUrl);
 
       // Keep OAuth/authentication flows inside the app when popup support is enabled.
-      if (typeof window.isAuthLink === "function" && window.isAuthLink(absoluteUrl)) {
+      if (
+        typeof window.isAuthLink === "function" &&
+        window.isAuthLink(absoluteUrl)
+      ) {
         console.log("[Pake] Handling OAuth navigation in-app:", absoluteUrl);
 
         if (window.pakeConfig?.new_window) {
@@ -636,7 +639,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // Rewrite the window.open function.
   window.open = function (url, name, specs) {
     // Allow authentication popups to open normally
-    if (typeof window.isAuthPopup === "function" && window.isAuthPopup(url, name)) {
+    if (
+      typeof window.isAuthPopup === "function" &&
+      window.isAuthPopup(url, name)
+    ) {
       return originalWindowOpen.call(window, url, name, specs);
     }
 
@@ -997,66 +1003,66 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Handle right-click context menu
-document.addEventListener(
-  "contextmenu",
-  function (event) {
-    const target = event.target;
+  document.addEventListener(
+    "contextmenu",
+    function (event) {
+      const target = event.target;
 
-    const tagName = target && target.tagName && target.tagName.toLowerCase();
-    const isEditable =
-      tagName === "input" ||
-      tagName === "textarea" ||
-      (target && target.isContentEditable);
+      const tagName = target && target.tagName && target.tagName.toLowerCase();
+      const isEditable =
+        tagName === "input" ||
+        tagName === "textarea" ||
+        (target && target.isContentEditable);
 
-    // 输入框保留原生菜单
-    if (isEditable) {
-      return;
-    }
+      // 输入框保留原生菜单
+      if (isEditable) {
+        return;
+      }
 
-    // 先判断是否是媒体或链接
-    const mediaInfo = getMediaInfo(target);
-    const linkElement =
-      target && typeof target.closest === "function"
-        ? target.closest("a")
-        : null;
-    const isLink = linkElement && linkElement.href && !mediaInfo.isMedia;
+      // 先判断是否是媒体或链接
+      const mediaInfo = getMediaInfo(target);
+      const linkElement =
+        target && typeof target.closest === "function"
+          ? target.closest("a")
+          : null;
+      const isLink = linkElement && linkElement.href && !mediaInfo.isMedia;
 
-    // 空白处直接放行，恢复原来的默认菜单
-    if (!mediaInfo.isMedia && !isLink) {
-      return;
-    }
+      // 空白处直接放行，恢复原来的默认菜单
+      if (!mediaInfo.isMedia && !isLink) {
+        return;
+      }
 
-    // 只有图片/视频/链接才拦截，显示自定义菜单
-    event.preventDefault();
-    event.stopPropagation();
+      // 只有图片/视频/链接才拦截，显示自定义菜单
+      event.preventDefault();
+      event.stopPropagation();
 
-    let menuItems = [];
+      let menuItems = [];
 
-    if (mediaInfo.isMedia) {
-      menuItems = buildMenuItems("media", mediaInfo);
-    } else if (isLink) {
-      const linkUrl = linkElement.href;
-      menuItems = buildMenuItems("link", {
-        url: linkUrl,
-        isFile: isDownloadableFile(linkUrl),
-      });
-    }
+      if (mediaInfo.isMedia) {
+        menuItems = buildMenuItems("media", mediaInfo);
+      } else if (isLink) {
+        const linkUrl = linkElement.href;
+        menuItems = buildMenuItems("link", {
+          url: linkUrl,
+          isFile: isDownloadableFile(linkUrl),
+        });
+      }
 
-    // 末尾追加广告切换项
-    const isInjectionDisabled =
-      localStorage.getItem("pake_disable_js_injection") === "true";
-    const adToggleText = isInjectionDisabled
-      ? menuTexts.enableAds
-      : menuTexts.disableAds;
+      // 末尾追加广告切换项
+      const isInjectionDisabled =
+        localStorage.getItem("pake_disable_js_injection") === "true";
+      const adToggleText = isInjectionDisabled
+        ? menuTexts.enableAds
+        : menuTexts.disableAds;
 
-    if (menuItems.length > 0) {
-      menuItems.push(createMenuSeparator());
-    }
-    menuItems.push(createMenuItem(adToggleText, toggleJsInjection));
+      if (menuItems.length > 0) {
+        menuItems.push(createMenuSeparator());
+      }
+      menuItems.push(createMenuItem(adToggleText, toggleJsInjection));
 
-    showContextMenu(event.clientX, event.clientY, menuItems);
-  },
-  true,
+      showContextMenu(event.clientX, event.clientY, menuItems);
+    },
+    true,
   );
 
   let permVal = "granted";
