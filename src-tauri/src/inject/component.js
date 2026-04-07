@@ -20,6 +20,12 @@ document.addEventListener("DOMContentLoaded", () => {
   window.pakeToast = pakeToast;
 });
 
+
+function isBilibiliLivePage() {
+  return /(^|\.)bilibili\.com$/.test(location.hostname) && (
+    location.pathname.includes("/live/")
+  );
+}
 // Polyfill for HTML5 Fullscreen API in Tauri webview
 // This bridges the HTML5 Fullscreen API to Tauri's native window fullscreen
 // Works for all video sites (YouTube, Vimeo, Bilibili, etc.)
@@ -28,6 +34,9 @@ document.addEventListener("DOMContentLoaded", () => {
   window.__PAKE_FULLSCREEN_POLYFILL__ = true;
 
   function initFullscreenPolyfill() {
+    if (isBilibiliLivePage()){
+      return;
+    }
     if (!window.__TAURI__ || !document.head) {
       setTimeout(initFullscreenPolyfill, 100);
       return;
