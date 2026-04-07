@@ -20,9 +20,9 @@ document.addEventListener("DOMContentLoaded", () => {
   window.pakeToast = pakeToast;
 });
 
-
 function isBilibiliLivePage() {
-  return /(^|\.)bilibili\.com$/.test(location.hostname) && (
+  return (
+    /(^|\.)bilibili\.com$/.test(location.hostname) &&
     location.pathname.includes("/live/")
   );
 }
@@ -34,7 +34,7 @@ function isBilibiliLivePage() {
   window.__PAKE_FULLSCREEN_POLYFILL__ = true;
 
   function initFullscreenPolyfill() {
-    if (isBilibiliLivePage()){
+    if (isBilibiliLivePage()) {
       return;
     }
     if (!window.__TAURI__ || !document.head) {
